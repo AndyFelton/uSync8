@@ -59,11 +59,15 @@ namespace uSync8.BackOffice.SyncHandlers.Handlers
 
         public override IEnumerable<uSyncAction> ProcessPostImport(string folder, IEnumerable<uSyncAction> actions, HandlerSettings config)
         {
+
+            logger.Debug<DataTypeHandler>("Post Import: {0}", folder);
+
             if (actions == null || !actions.Any())
                 return null;
 
             foreach (var action in actions)
             {
+                logger.Debug<DataTypeHandler>("Post Import Action: {0}", action.FileName);
                 var attempt = Import(action.FileName, config, SerializerFlags.None);
                 if (attempt.Success)
                 {

@@ -186,6 +186,8 @@ namespace uSync8.BackOffice.SyncHandlers
 
         virtual public SyncAttempt<TObject> Import(string filePath, HandlerSettings config, SerializerFlags flags)
         {
+            logger.Debug<uSync8BackOffice>("Base Import : Importing {0}", filePath);
+
             try
             {
                 syncFileService.EnsureFileExists(filePath);
@@ -193,7 +195,11 @@ namespace uSync8.BackOffice.SyncHandlers
                 using (var stream = syncFileService.OpenRead(filePath))
                 {
                     var node = XElement.Load(stream);
+
+                    logger.Debug<uSync8BackOffice>("Base Import : Loaded XML");
                     var attempt = serializer.Deserialize(node, flags);
+                    
+                    logger.Debug<uSync8BackOffice>("Base Import : Serialized {0}", attempt.Success);
                     return attempt;
                 }
             }
@@ -203,6 +209,7 @@ namespace uSync8.BackOffice.SyncHandlers
             }
             catch (Exception ex)
             {
+                logger.Warn<uSync8BackOffice>("Base Import Fail : {0}", ex.ToString());
                 return SyncAttempt<TObject>.Fail(Path.GetFileName(filePath), ChangeType.Fail, $"Import Fail: {ex.Message}");
             }
         }
